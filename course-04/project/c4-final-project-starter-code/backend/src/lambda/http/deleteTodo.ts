@@ -1,22 +1,19 @@
 import 'source-map-support/register';
+import { getUserId } from '../utils';
 import {APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler} from 'aws-lambda';
-import {deleteToDo} from "../../helper/todos";
+import {deleteTodo} from "../../helper/todos";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     console.log("Processing Event ", event);
-    const authorization = event.headers.Authorization;
-    const split = authorization.split(' ');
-    const jwtToken = split[1];
+    
 
     const todoId = event.pathParameters.todoId;
+    const userId = getUserId(event);
 
-    const deleteData = await deleteToDo(todoId, jwtToken);
+    await deleteTodo(todoId, userId);
 
     return {
         statusCode: 200,
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-        },
-        body: deleteData,
+        body: ""
     }
 };
