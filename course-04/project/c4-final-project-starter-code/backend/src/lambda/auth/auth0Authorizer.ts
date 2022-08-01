@@ -8,7 +8,6 @@ import { JwtPayload } from '../../auth/JwtPayload'
 
 const logger = createLogger('auth')
 
-
 const jwksUrl = 'https://dev-brtdpz8h.us.auth0.com/.well-known/jwks.json';
 
 export const handler = async (

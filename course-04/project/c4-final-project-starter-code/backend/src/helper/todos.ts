@@ -3,17 +3,10 @@ import { parseUserId } from "../auth/utils";
 import { CreateTodoRequest } from '../requests/CreateTodoRequest';
 import { UpdateTodoRequest } from '../requests/UpdateTodoRequest';
 import { TodoUpdate } from '../models/TodoUpdate';
-import { todosAcess } from "../DataLayer/todosAcess";
-
-
+import { todosAcess } from "../helper/todosAcess";
 
 const uuidv4 = require('uuid/v4');
 const toDoAccess = new todosAcess();
-
-export async function getAllToDo(jwtToken: string): Promise<TodoItem[]> {
-    const userId = parseUserId(jwtToken);
-    return toDoAccess.getAllToDo(userId);
-}
 
 export function createToDo(createTodoRequest: CreateTodoRequest, jwtToken: string): Promise<TodoItem> {
     const userId = parseUserId(jwtToken);
@@ -30,14 +23,21 @@ export function createToDo(createTodoRequest: CreateTodoRequest, jwtToken: strin
     });
 }
 
+
+export function deleteToDo(todoId: string, jwtToken: string): Promise<string> {
+    const userId = parseUserId(jwtToken);
+    return toDoAccess.deleteToDo(todoId, userId);
+}
+
+
 export function updateToDo(updateTodoRequest: UpdateTodoRequest, todoId: string, jwtToken: string): Promise<TodoUpdate> {
     const userId = parseUserId(jwtToken);
     return toDoAccess.updateToDo(updateTodoRequest, todoId, userId);
 }
 
-export function deleteToDo(todoId: string, jwtToken: string): Promise<string> {
+export async function getAllToDo(jwtToken: string): Promise<TodoItem[]> {
     const userId = parseUserId(jwtToken);
-    return toDoAccess.deleteToDo(todoId, userId);
+    return toDoAccess.getAllToDo(userId);
 }
 
 export function generateUploadUrl(todoId: string): Promise<string> {

@@ -1,7 +1,7 @@
 import 'source-map-support/register';
 import {APIGatewayProxyEvent, APIGatewayProxyHandler, APIGatewayProxyResult} from 'aws-lambda';
 import {CreateTodoRequest} from '../../requests/CreateTodoRequest';
-import {createToDo} from "../../Business-Logic/todos";
+import {createToDo} from "../../helper/todos";
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     console.log("Processing Event ", event);

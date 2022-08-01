@@ -4,35 +4,12 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { TodoItem } from '../models/TodoItem';
 import { TodoUpdate } from '../models/TodoUpdate';
 
-
-
 export class todosAcess {
     constructor(
         private readonly docClient: DocumentClient = new AWS.DynamoDB.DocumentClient(),
         private readonly s3Client: Types = new AWS.S3({ signatureVersion: 'v4' }),
         private readonly todoTable = process.env.TODOS_TABLE,
         private readonly s3BucketName = process.env.S3_BUCKET) {
-    }
-
-    async getAllToDo(userId: string): Promise<TodoItem[]> {
-        console.log("Getting all todo");
-
-        const params = {
-            TableName: this.todoTable,
-            KeyConditionExpression: "#userId = :userId",
-            ExpressionAttributeNames: {
-                "#userId": "userId"
-            },
-            ExpressionAttributeValues: {
-                ":userId": userId
-            }
-        };
-
-        const result = await this.docClient.query(params).promise();
-        console.log(result);
-        const items = result.Items;
-
-        return items as TodoItem[];
     }
 
     async createToDo(todoItem: TodoItem): Promise<TodoItem> {
@@ -47,6 +24,23 @@ export class todosAcess {
         console.log(result);
 
         return todoItem as TodoItem;
+    }
+
+    async deleteToDo(todoId: string, userId: string): Promise<string> {
+        console.log("Deleting todo");
+
+        const params = {
+            TableName: this.todoTable,
+            Key: {
+                "userId": userId,
+                "todoId": todoId
+            },
+        };
+
+        const result = await this.docClient.delete(params).promise();
+        console.log(result);
+
+        return " " as string;
     }
 
     async updateToDo(todoUpdate: TodoUpdate, todoId: string, userId: string): Promise<TodoUpdate> {
@@ -79,23 +73,28 @@ export class todosAcess {
         return attributes as TodoUpdate;
     }
 
-    async deleteToDo(todoId: string, userId: string): Promise<string> {
-        console.log("Deleting todo");
+    async getAllToDo(userId: string): Promise<TodoItem[]> {
+        console.log("Getting all todo");
 
         const params = {
             TableName: this.todoTable,
-            Key: {
-                "userId": userId,
-                "todoId": todoId
+            KeyConditionExpression: "#userId = :userId",
+            ExpressionAttributeNames: {
+                "#userId": "userId"
             },
+            ExpressionAttributeValues: {
+                ":userId": userId
+            }
         };
 
-        const result = await this.docClient.delete(params).promise();
+        const result = await this.docClient.query(params).promise();
         console.log(result);
+        const items = result.Items;
 
-        return "" as string;
+        return items as TodoItem[];
     }
 
+    
     async generateUploadUrl(todoId: string): Promise<string> {
         console.log("Generating URL");
 
